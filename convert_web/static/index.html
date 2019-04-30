@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>CIMS Convert</title>
+        <style>
+            body {
+                background-color: #f2fff0;
+                font-family: sans-serif;
+                font-size: small;
+            }
+            #result, #output {
+                font-family: monospace;
+                margin-top: 1em;
+            }
+            #output {
+                color: darkgreen;
+                white-space: pre;
+            }
+            #output .error {
+                color: darkred;
+            }
+            input {
+                margin-top: .5em;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>CIMS Convert</h1>
+        <p>To convert a form, select an XLSForm and press the 'Convert' button.</p>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <label for="xlsform">XLSForm:</label>
+            <input id="xform" type="file" name="xlsform"
+                   accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required/>
+            <input type="submit" value="Convert" />
+        </form>
+    </body>
+    </script>
+</html>

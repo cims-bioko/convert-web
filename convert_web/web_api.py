@@ -6,7 +6,23 @@ from .api import xls2zip, xls2xform, xls2itemset
 from .fileio import write_file
 
 
-convert_api = Blueprint('convert_api', __name__)
+convert_api = Blueprint('convert_api', __name__, static_folder='static')
+
+
+@convert_api.route("/", methods=['GET'])
+def index_page():
+    return convert_api.send_static_file('index.html')
+
+
+@convert_api.route("/", methods=['POST'])
+@consumes("multipart/form-data")
+def manual():
+    with TemporaryDirectory() as temp_dir:
+        upload = request.files['xlsform']
+        xls_path = join(temp_dir, "form.xls")
+        upload.save(xls_path)
+        (zip_path, warnings) = xls2zip(temp_dir, xls_path)
+        return send_file(zip_path, mimetype="application/zip")
 
 
 @convert_api.route("/xls2zip", methods=['POST'])
