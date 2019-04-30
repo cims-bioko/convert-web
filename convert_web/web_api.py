@@ -1,17 +1,18 @@
-from flask import Blueprint, request, Response, send_file
+from flask import Blueprint, request, Response, send_file, render_template
 from flask_negotiate import consumes, produces
 from tempfile import TemporaryDirectory
 from os.path import isfile, join
 from .api import xls2zip, xls2xform, xls2itemset
 from .fileio import write_file
+import pyxform
 
 
-convert_api = Blueprint('convert_api', __name__, static_folder='static')
+convert_api = Blueprint('convert_api', __name__, template_folder='templates')
 
 
 @convert_api.route("/", methods=['GET'])
 def index_page():
-    return convert_api.send_static_file('index.html')
+    return render_template('index.html')
 
 
 @convert_api.route("/", methods=['POST'])
@@ -21,11 +22,14 @@ def manual():
         upload = request.files['xlsform']
         xls_path = join(temp_dir, "form.xls")
         upload.save(xls_path)
-        (zip_path, warnings) = xls2zip(temp_dir, xls_path)
-        return send_file(zip_path,
-                as_attachment=True,
-                attachment_filename="converted.zip",
-                mimetype="application/zip")
+        try:
+            (zip_path, warnings) = xls2zip(temp_dir, xls_path)
+            return send_file(zip_path,
+                    as_attachment=True,
+                    attachment_filename="converted.zip",
+                    mimetype="application/zip")
+        except pyxform.errors.PyXFormError as e:
+            return render_template('index.html', error=str(e)), 400
 
 
 @convert_api.route("/xls2zip", methods=['POST'])
