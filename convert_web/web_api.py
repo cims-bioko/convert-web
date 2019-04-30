@@ -22,7 +22,10 @@ def manual():
         xls_path = join(temp_dir, "form.xls")
         upload.save(xls_path)
         (zip_path, warnings) = xls2zip(temp_dir, xls_path)
-        return send_file(zip_path, mimetype="application/zip")
+        return send_file(zip_path,
+                as_attachment=True,
+                attachment_filename="converted.zip",
+                mimetype="application/zip")
 
 
 @convert_api.route("/xls2zip", methods=['POST'])
