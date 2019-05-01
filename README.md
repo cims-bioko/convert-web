@@ -21,7 +21,14 @@ The above features are addressed as follows:
   * Low-maintenance: the api is based on the same pyfxorm library as the ODK
     tools and attempts to "go with the flow" to rapidly handle ODK updates
   * 100% ODK compatible: the service is based on the same pyxform library 
-    specifically to decrease the opportunity for incompatibilities
+    specifically to decrease the opportunity for incompatibilities.
+
+Additionally, validation is handled separately due to the fact that it:
+
+  * is useful outside of XLSForm conversion
+  * it requires a completely different runtime, Java, and its own dependencies
+  * by splitting it out, both services can benefit from the same design 
+    benefits listed above
  
 ## Requirements
 
