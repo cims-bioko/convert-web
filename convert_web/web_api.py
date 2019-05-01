@@ -1,13 +1,27 @@
-from flask import Blueprint, request, Response, send_file, render_template
+from flask import Blueprint, request, Response, send_file, render_template, jsonify
 from flask_negotiate import consumes, produces
 from tempfile import TemporaryDirectory
 from os.path import isfile, join
 from .api import xls2zip, xls2xform, xls2itemset
 from .fileio import write_file
-import pyxform
+from pyxform.errors import PyXFormError
 
 
 convert_api = Blueprint('convert_api', __name__, template_folder='templates')
+
+
+@convert_api.errorhandler(Exception)
+def handle_general_errors(error):
+    response = jsonify({'output': [{'error': True, 'message': str(error)}]})
+    response.status_code = 500
+    return response
+
+
+@convert_api.errorhandler(PyXFormError)
+def handle_pyxform_errors(error):
+    response = jsonify({'output': [{'error': True, 'message': str(error)}]})
+    response.status_code = 400
+    return response
 
 
 @convert_api.route("/", methods=['GET'])
@@ -28,7 +42,7 @@ def manual():
                     as_attachment=True,
                     attachment_filename="converted.zip",
                     mimetype="application/zip")
-        except pyxform.errors.PyXFormError as e:
+        except PyXFormError as e:
             return render_template('index.html', error=str(e)), 400
 
 
