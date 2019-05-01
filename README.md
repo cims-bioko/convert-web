@@ -11,8 +11,17 @@ service.
 The existing ODK tool, XLSForm Online, delivers an all-in-one conversion 
 service for human users. Certain characteristics, directly derived from that 
 goal, makes it unsuitable for programmatic usage for other web applications.
-This application is meant to provide a high-performance, highly-scalable, 
-conversion service suitable for these types of applications.
+This application is meant to provide a scalable, low-maintenance, 100% ODK 
+compatible conversion service suitable for these applications. 
+
+The above features are addressed as follows:
+
+  * Scalable: no state is maintained between api requests allowing multiple
+    servers to handle requests without coordination
+  * Low-maintenance: the api is based on the same pyfxorm library as the ODK
+    tools and attempts to "go with the flow" to rapidly handle ODK updates
+  * 100% ODK compatible: the service is based on the same pyxform library 
+    specifically to decrease the opportunity for incompatibilities
  
 ## Requirements
 
