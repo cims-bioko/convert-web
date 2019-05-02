@@ -25,7 +25,7 @@ The above features are addressed as follows:
 
 Additionally, validation is handled separately because:
 
-  * Is useful outside of XLSForm conversion
+  * It is useful outside of XLSForm conversion
   * It requires a completely different runtime, Java, and its own dependencies
   * Deployed separately, both services can benefit from the same benefits 
     listed above
