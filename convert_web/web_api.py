@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response, send_file, render_template, jsonify
+from flask import Blueprint, request, Response, send_file, render_template, jsonify, send_from_directory
 from flask_negotiate import consumes, produces
 from tempfile import TemporaryDirectory
 from os.path import isfile, join
@@ -15,6 +15,12 @@ def handle_general_errors(error):
     response = jsonify({'output': [{'error': True, 'message': str(error)}]})
     response.status_code = 500
     return response
+
+
+@convert_api.route('/favicon.ico')
+def favicon():
+    static_dir = join(convert_api.root_path, 'static')
+    return send_from_directory(static_dir, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 @convert_api.errorhandler(PyXFormError)
