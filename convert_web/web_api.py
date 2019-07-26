@@ -43,7 +43,7 @@ def manual():
         xls_path = join(temp_dir, "form.xls")
         upload.save(xls_path)
         try:
-            (zip_path, warnings) = xls2zip(temp_dir, xls_path)
+            (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=True)
             return send_file(zip_path,
                     as_attachment=True,
                     attachment_filename="converted.zip",
