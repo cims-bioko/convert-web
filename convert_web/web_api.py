@@ -41,9 +41,10 @@ def manual():
     with TemporaryDirectory() as temp_dir:
         upload = request.files['xlsform']
         xls_path = join(temp_dir, "form.xls")
+        formatted = request.form.get('formatted', default=False)
         upload.save(xls_path)
         try:
-            (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=True)
+            (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=formatted)
             return send_file(zip_path,
                     as_attachment=True,
                     attachment_filename="converted.zip",
@@ -59,8 +60,9 @@ def manual():
 def zip():
     with TemporaryDirectory() as temp_dir:
         xls_path = join(temp_dir, "form.xls")
+        formatted = request.args.get('formatted', default=False)
         write_file(xls_path, request.get_data())
-        (zip_path, warnings) = xls2zip(temp_dir, xls_path)
+        (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=formatted)
         return send_file(zip_path, mimetype="application/zip")
 
 
@@ -71,8 +73,9 @@ def zip():
 def xform():
     with TemporaryDirectory() as temp_dir:
         xls_path = join(temp_dir, "form.xls")
+        formatted = request.args.get('formatted', default=False)
         write_file(xls_path, request.get_data())
-        (xform_path, warnings) = xls2xform(temp_dir, xls_path)
+        (xform_path, warnings) = xls2xform(temp_dir, xls_path, formatted=formatted)
         return send_file(xform_path, mimetype="application/xml")
 
 

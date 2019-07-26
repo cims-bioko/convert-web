@@ -29,9 +29,15 @@
         <h1>CIMS Convert</h1>
         <p>To convert a form, select an XLSForm and press the 'Convert' button.</p>
         <form action="/" method="POST" enctype="multipart/form-data">
+            <div>
             <label for="xlsform">XLSForm:</label>
             <input id="xform" type="file" name="xlsform"
                    accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required/>
+            </div>
+            <div>
+            <input id="formatted" type="checkbox" name="formatted" value="True" checked>
+            <label for="formatted">Format XML</label>
+            <div>
             <input type="submit" value="Convert" />
         </form>
 	{% if error %}
