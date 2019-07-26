@@ -12,15 +12,15 @@ def xls2json(xls_path, instance_name="data"):
     return (json, warnings)
 
 
-def survey2xform(survey, xform_path):
+def survey2xform(survey, xform_path, formatted=False):
     warnings = []
     survey.print_xform_to_file(xform_path, validate=False, 
-            pretty_print=True, warnings=warnings, enketo=False)
+            pretty_print=formatted, warnings=warnings, enketo=False)
     return warnings
 
 
 def xls2zip(work_dir, xls_path, xform_name="form.xml",
-        items_name="itemsets.csv", zip_name="form.zip"):
+        items_name="itemsets.csv", zip_name="form.zip", formatted=False):
 
     xform_path = join(work_dir, xform_name)
     items_path = join(work_dir, items_name)
@@ -28,7 +28,7 @@ def xls2zip(work_dir, xls_path, xform_name="form.xml",
 
     (json, json_warnings) = xls2json(xls_path)
     survey = json2survey(json)
-    xform_warnings = survey2xform(survey, xform_path)
+    xform_warnings = survey2xform(survey, xform_path, formatted=formatted)
 
     items_warnings = []
     if has_external_choices(json):
@@ -39,13 +39,13 @@ def xls2zip(work_dir, xls_path, xform_name="form.xml",
     return (zip_path, json_warnings + xform_warnings + items_warnings)
 
 
-def xls2xform(work_dir, xls_path, xform_name="form.xml"):
+def xls2xform(work_dir, xls_path, xform_name="form.xml", formatted=False):
 
     xform_path = join(work_dir, xform_name)
 
     (json, json_warnings) = xls2json(xls_path)
     survey = json2survey(json)
-    xform_warnings = survey2xform(survey, xform_path)
+    xform_warnings = survey2xform(survey, xform_path, formatted=formatted)
 
     return (xform_path, json_warnings + xform_warnings)
 
