@@ -29,9 +29,7 @@ def survey2xform(survey, xform_path, formatted=False, validated=True):
                         'Accept':'application/json'})
             json = response.json()
             if (not json['valid']):
-                messages = [msg['message'] for msg in json['output']]
-                print(messages)
-                raise ValidationError("\n".join(messages))
+                raise ValidationError("\n".join([msg['message'] for msg in json['output']]))
     return warnings
 
 
