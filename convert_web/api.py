@@ -1,8 +1,14 @@
 from pyxform.builder import create_survey_element_from_dict as json2survey
 from pyxform.xls2json import parse_file_to_json
 from pyxform.utils import has_external_choices, sheet_to_csv
+from pyxform.errors import ValidationError
 from os.path import join  
 from .fileio import write_zip
+import requests
+import os
+
+
+VALIDATE_SERVER=os.getenv('VALIDATE_URL') or 'https://validate.cims-bioko.org'
 
 
 def xls2json(xls_path, instance_name="data"):
@@ -12,15 +18,25 @@ def xls2json(xls_path, instance_name="data"):
     return (json, warnings)
 
 
-def survey2xform(survey, xform_path, formatted=False):
+def survey2xform(survey, xform_path, formatted=False, validated=True):
     warnings = []
     survey.print_xform_to_file(xform_path, validate=False, 
             pretty_print=formatted, warnings=warnings, enketo=False)
+    if validated:
+        with open(xform_path, 'rb') as xform:
+            response = requests.post(VALIDATE_SERVER, data=xform, headers={
+                        'Content-Type':'application/xml',
+                        'Accept':'application/json'})
+            json = response.json()
+            if (not json['valid']):
+                messages = [msg['message'] for msg in json['output']]
+                print(messages)
+                raise ValidationError("\n".join(messages))
     return warnings
 
 
 def xls2zip(work_dir, xls_path, xform_name="form.xml",
-        items_name="itemsets.csv", zip_name="form.zip", formatted=False):
+        items_name="itemsets.csv", zip_name="form.zip", formatted=False, validated=True):
 
     xform_path = join(work_dir, xform_name)
     items_path = join(work_dir, items_name)
@@ -28,7 +44,7 @@ def xls2zip(work_dir, xls_path, xform_name="form.xml",
 
     (json, json_warnings) = xls2json(xls_path)
     survey = json2survey(json)
-    xform_warnings = survey2xform(survey, xform_path, formatted=formatted)
+    xform_warnings = survey2xform(survey, xform_path, formatted=formatted, validated=validated)
 
     items_warnings = []
     if has_external_choices(json):
@@ -39,7 +55,7 @@ def xls2zip(work_dir, xls_path, xform_name="form.xml",
     return (zip_path, json_warnings + xform_warnings + items_warnings)
 
 
-def xls2xform(work_dir, xls_path, xform_name="form.xml", formatted=False):
+def xls2xform(work_dir, xls_path, xform_name="form.xml", formatted=False, validated=True):
 
     xform_path = join(work_dir, xform_name)
 

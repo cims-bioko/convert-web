@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 from os.path import isfile, join
 from .api import xls2zip, xls2xform, xls2itemset
 from .fileio import write_file
-from pyxform.errors import PyXFormError
+from pyxform.errors import PyXFormError, ValidationError
 
 
 convert_api = Blueprint('convert_api', __name__, template_folder='templates')
@@ -24,6 +24,7 @@ def favicon():
 
 
 @convert_api.errorhandler(PyXFormError)
+@convert_api.errorhandler(ValidationError)
 def handle_pyxform_errors(error):
     response = jsonify({'output': [{'error': True, 'message': str(error)}]})
     response.status_code = 400
@@ -42,9 +43,10 @@ def manual():
         upload = request.files['xlsform']
         xls_path = join(temp_dir, "form.xls")
         formatted = request.form.get('formatted', default=False)
+        validated = request.form.get('validated', default=False)
         upload.save(xls_path)
         try:
-            (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=formatted)
+            (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=formatted, validated=validated)
             return send_file(zip_path,
                     as_attachment=True,
                     attachment_filename="converted.zip",
@@ -61,8 +63,9 @@ def zip():
     with TemporaryDirectory() as temp_dir:
         xls_path = join(temp_dir, "form.xls")
         formatted = request.args.get('formatted', default=False)
+        validated = request.args.get('validated', default=True)
         write_file(xls_path, request.get_data())
-        (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=formatted)
+        (zip_path, warnings) = xls2zip(temp_dir, xls_path, formatted=formatted, validated=validated)
         return send_file(zip_path, mimetype="application/zip")
 
 
@@ -74,8 +77,9 @@ def xform():
     with TemporaryDirectory() as temp_dir:
         xls_path = join(temp_dir, "form.xls")
         formatted = request.args.get('formatted', default=False)
+        validated = request.args.get('validated', default=True)
         write_file(xls_path, request.get_data())
-        (xform_path, warnings) = xls2xform(temp_dir, xls_path, formatted=formatted)
+        (xform_path, warnings) = xls2xform(temp_dir, xls_path, formatted=formatted, validated=validated)
         return send_file(xform_path, mimetype="application/xml")
 
 
