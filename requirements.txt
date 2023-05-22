@@ -1,5 +1,5 @@
 pyxform==0.14.1
 Flask==1.0.2
 flask-negotiate==0.1.0
-requests==2.22.0
+requests==2.31.0
 
